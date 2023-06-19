@@ -14,15 +14,16 @@ public class Cell
     public Vector3 initialSize { get; set; }
     public Vector3 finalSize { get; set; }
 
-    public GameObject cellObject { get; set; }
+    public GameObject gameObject { get; set; }
 
     public void InstantiatePrefab()
     {
         GameObject prefab = Resources.Load<GameObject>(prefabName);
-        cellObject = GameObject.Instantiate(prefab);
+        gameObject = GameObject.Instantiate(prefab);
+        gameObject.name = "Cell#" + id.ToString();
 
-        cellObject.transform.localScale = initialSize;
-        cellObject.transform.position = Vector3.zero;
+        gameObject.transform.localScale = initialSize;
+        gameObject.transform.position = Vector3.zero;
     }
 
     public void UpdateSize()
@@ -30,6 +31,6 @@ public class Cell
         float factor = currentAge / lifespan;
 
         Vector3 newSize = Vector3.Lerp(initialSize, finalSize, factor);
-        cellObject.transform.localScale = newSize;
+        gameObject.transform.localScale = newSize;
     }
 }
