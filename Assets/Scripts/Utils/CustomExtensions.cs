@@ -24,5 +24,11 @@ namespace Utils {
         {
             return cell?.gameObject?.transform;
         }
+
+        public static Vector3 GetPosition(this Cell cell)
+        {
+            // TODO: figure out the optionals here
+            return cell?.gameObject?.transform.position ?? Vector3.zero;
+        }
     }
 }

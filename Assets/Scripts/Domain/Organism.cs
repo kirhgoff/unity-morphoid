@@ -52,26 +52,42 @@ namespace Domain {
         {           
             bodyPart.cell.InstantiatePrefab();
 
-            if (!cells.ContainsKey(bodyPart.parentCellId))
+            if (IsRoot(bodyPart))
             {
-                // Its a root
+                // TODO: it works only because the root is always at 0,0,0
                 bodyPart.cell.gameObject.transform.position = new Vector3(0, 0, 0);
             } 
             else 
             {
-                // Its a child
                 Cell parentCell = cells[bodyPart.parentCellId];
 
-                // TODO: add trasform to the cell and use it here
                 bodyPart.GetTransform().Tap(child => {
-                    parentCell.GetTransform().Tap(parent => {
-                        child.position = parent.position + parentCell.gameObject.transform.forward;
-                        child.rotation = parent.rotation;
-                    });
+                    Place(child, parentCell);
                 });
             }
 
             cells.Add(bodyPart.cell.id, bodyPart.cell);
         }
+
+        Boolean IsRoot(BodyPart bodyPart)
+        {
+            return bodyPart.parentCellId == Guid.Empty;
+        }
+
+        private void Place(Transform child, Cell parent)
+        {
+            ConnectionPoint connectionPoint = parent.GetUnoccupiedConnectionPoint();
+            
+            if (connectionPoint == null)
+            {
+                Debug.LogError("No available connection points on parent cell");
+                return;
+            }
+
+            child.position = parent.GetPosition() + parent.GetTransform().TransformDirection(connectionPoint.position);
+            child.rotation = Quaternion.LookRotation(parent.GetTransform().TransformDirection(connectionPoint.forward), parent.GetTransform().up);
+            
+            connectionPoint.isOccupied = true;
+        }        
     }
 }
