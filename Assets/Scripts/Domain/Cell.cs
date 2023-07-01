@@ -68,12 +68,12 @@ namespace Domain
                 connectionPoints.Add(new ConnectionPoint(new Vector3(x, y, z), direction));
             }
 
-            AddConnectionPoint(0, 0, 0.5f, Vector3.forward);
-            AddConnectionPoint(0, 0, -0.5f, Vector3.back);
             AddConnectionPoint(0.5f, 0, 0, Vector3.right);
             AddConnectionPoint(-0.5f, 0, 0, Vector3.left);
             AddConnectionPoint(0, 0.5f, 0, Vector3.up);
             AddConnectionPoint(0, -0.5f, 0, Vector3.down);
+            AddConnectionPoint(0, 0, 0.5f, Vector3.forward);
+            AddConnectionPoint(0, 0, -0.5f, Vector3.back);
         }
     }
 }
