@@ -19,9 +19,9 @@ public class Cell
     public void InstantiatePrefab()
     {
         GameObject prefab = Resources.Load<GameObject>(prefabName);
-        gameObject = GameObject.Instantiate(prefab);
+        gameObject = GameObject.Instantiate(prefab) as GameObject;
+        
         gameObject.name = "Cell#" + id.ToString();
-
         gameObject.transform.localScale = initialSize;
         gameObject.transform.position = Vector3.zero;
     }

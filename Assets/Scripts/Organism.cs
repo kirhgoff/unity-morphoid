@@ -1,29 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public static class Extensions
-{
-    public static T Tap<T>(this T obj, Action<T> action)
-    {
-        action(obj);
-        return obj;
-    }
-}
-
-public class BodyPart
-{
-    public float relativeTimeToAppear; // The relative time when this part should appear
-    public Guid parentId; // The ID of the parent cell that this part grows from
-    public Cell cell; // The new cell to add
-}
-
-public class BodyPlan
-{
-    public List<BodyPart> bodyParts = new List<BodyPart>();
-    public float lifespan; // lifespan of the organism
-}
 
 public class Organism
 {
@@ -41,29 +18,23 @@ public class Organism
     {
         currentTime += Time.deltaTime;
 
+        // TODO: move this part of code to body plan
         foreach (var bodyPart in bodyPlan.bodyParts)
         {
-            if (currentTime >= bodyPart.relativeTimeToAppear * bodyPlan.lifespan && !cells.ContainsKey(bodyPart.cell.id))
-            {
-                Cell parentCell = cells[bodyPart.parentId];
-
-                // TODO: make a delegate?
-                bodyPart.cell.gameObject.transform.Tap(child => {
-                    parentCell.gameObject.transform.Tap(parent => {
-                        child.position = parent.position + parentCell.gameObject.transform.forward;
-                        child.rotation = parent.rotation;
-                    });
-                });
-
-                // Instantiate the new cell
-                bodyPart.cell.InstantiatePrefab();
-
-                // Add the new cell to the cells dictionary
-                cells.Add(bodyPart.cell.id, bodyPart.cell);
+            if (currentTime < bodyPart.relativeTimeToAppear * bodyPlan.lifespan || 
+                cells.ContainsKey(bodyPart.cell.id)
+            ) {
+                continue;
             }
+
+            AddPart(bodyPart);
         }
 
-        // Update all cells
+        ProgressCells();
+    }
+
+    void ProgressCells()
+    {
         foreach (var cell in cells.Values)
         {
             if (cell.currentAge <= cell.lifespan)
@@ -72,5 +43,22 @@ public class Organism
                 cell.UpdateSize();
             }
         }
+    }
+
+    void AddPart(BodyPart bodyPart)
+    {            
+        Cell parentCell = cells[bodyPart.parentCellId];
+
+        // TODO: add trasform to the cell and use it here
+        bodyPart.cell.gameObject.transform.Tap(child => {
+            parentCell.gameObject.transform.Tap(parent => {
+                child.position = parent.position + parentCell.gameObject.transform.forward;
+                child.rotation = parent.rotation;
+            });
+        });
+
+        bodyPart.cell.InstantiatePrefab();
+        
+        cells.Add(bodyPart.cell.id, bodyPart.cell);
     }
 }
