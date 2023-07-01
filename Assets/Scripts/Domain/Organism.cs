@@ -51,7 +51,7 @@ namespace Domain {
         void AddPart(BodyPart bodyPart)
         {           
             bodyPart.cell.InstantiatePrefab();
-            
+
             if (!cells.ContainsKey(bodyPart.parentCellId))
             {
                 // Its a root
@@ -63,8 +63,8 @@ namespace Domain {
                 Cell parentCell = cells[bodyPart.parentCellId];
 
                 // TODO: add trasform to the cell and use it here
-                bodyPart.cell.gameObject.transform.Tap(child => {
-                    parentCell.gameObject.transform.Tap(parent => {
+                bodyPart.GetTransform().Tap(child => {
+                    parentCell.GetTransform().Tap(parent => {
                         child.position = parent.position + parentCell.gameObject.transform.forward;
                         child.rotation = parent.rotation;
                     });

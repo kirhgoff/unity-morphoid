@@ -11,16 +11,14 @@ public class GrowingOrganism: MonoBehaviour
         var bodyPlan = new BodyPlanBuilder()
             .WithLifespan(10f)
             .AddRoot("body", 0.0f, new Cell("Cube", 10f, Vector3.one * 0.1f, Vector3.one))
+            .AddPart("head", "body", 0.2f, new Cell("Cube", 10f, Vector3.one * 0.05f, Vector3.one / 2f))
             .Build();
 
         organism = new Organism(bodyPlan);
-        Debug.Log("Organism created");
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Debug.Log("Updating organism");
         organism.Update();
     }
 }

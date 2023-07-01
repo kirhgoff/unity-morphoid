@@ -34,6 +34,7 @@ namespace Domain {
             
             // TODO: create a real name for the cell
             gameObject.name = "Cell#" + id.ToString();
+            // TODO: do this later when it is added to organism
             gameObject.transform.localScale = initialSize;
             gameObject.transform.position = Vector3.zero;
         }
