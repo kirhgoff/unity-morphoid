@@ -9,8 +9,8 @@ public class GrowingOrganism: MonoBehaviour
     void Start()
     {
         var bodyPlan = new BodyPlanBuilder()
-            .WithLifespan(100f)
-            .AddRoot("body", 0.0f, new Cell("Cube", 100f, Vector3.one * 0.1f, Vector3.one))
+            .WithLifespan(10f)
+            .AddRoot("body", 0.0f, new Cell("Cube", 10f, Vector3.one * 0.1f, Vector3.one))
             .Build();
 
         organism = new Organism(bodyPlan);

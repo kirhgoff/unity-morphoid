@@ -50,6 +50,8 @@ namespace Domain {
 
         void AddPart(BodyPart bodyPart)
         {           
+            bodyPart.cell.InstantiatePrefab();
+            
             if (!cells.ContainsKey(bodyPart.parentCellId))
             {
                 // Its a root
@@ -69,7 +71,6 @@ namespace Domain {
                 });
             }
 
-            bodyPart.cell.InstantiatePrefab();            
             cells.Add(bodyPart.cell.id, bodyPart.cell);
         }
     }
