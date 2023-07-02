@@ -84,8 +84,18 @@ namespace Domain {
                 return;
             }
 
-            child.position = parent.GetPosition() + parent.GetTransform().TransformDirection(connectionPoint.position);
-            child.rotation = Quaternion.LookRotation(parent.GetTransform().TransformDirection(connectionPoint.forward), parent.GetTransform().up);
+            Vector3 scaledPosition = Vector3.Scale(
+                connectionPoint.position, 
+                parent.GetTransform().localScale
+            );
+
+            child.position = parent.GetPosition() + 
+                parent.GetTransform().TransformDirection(scaledPosition);
+
+            child.rotation = Quaternion.LookRotation(
+                parent.GetTransform().TransformDirection(connectionPoint.forward), 
+                parent.GetTransform().up
+            );
             
             connectionPoint.isOccupied = true;
         }        
