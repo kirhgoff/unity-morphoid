@@ -11,6 +11,8 @@ namespace Domain {
         public BodyPlan bodyPlan;
         private float currentTime;
 
+        private Boolean stopDoingThis = false;
+
         public Organism(BodyPlan bodyPlan)
         {
             this.bodyPlan = bodyPlan;
@@ -19,6 +21,11 @@ namespace Domain {
 
         public void Update()
         {
+            if (stopDoingThis)
+            {
+                return;
+            }
+
             currentTime += Time.deltaTime;
 
             // TODO: move this part of code to body plan
@@ -50,11 +57,15 @@ namespace Domain {
 
         void AddPart(BodyPart bodyPart)
         {           
-            bodyPart.cell.InstantiatePrefab();
+            var cell = bodyPart.cell;
+            var prefab = Resources.Load<GameObject>(cell.prefabName);
+            cell.gameObject = GameObject.Instantiate(prefab) as GameObject;
+            cell.gameObject.name = bodyPart.name + "#" + cell.id.ToString();
+            cell.gameObject.transform.localScale = cell.initialSize;
 
             if (IsRoot(bodyPart))
             {
-                // TODO: it works only because the root is always at 0,0,0
+                // We assign global coordinates here
                 bodyPart.cell.gameObject.transform.position = new Vector3(0, 0, 0);
             } 
             else 
@@ -62,69 +73,16 @@ namespace Domain {
                 Place(bodyPart.cell, cells[bodyPart.parentCellId]);
             }
 
+            cell.InitializeCubeConnectionPoints();
+
             cells.Add(bodyPart.cell.id, bodyPart.cell);
+            // TODO: remove this
+            if (bodyPart.name != "body") stopDoingThis = true;
         }
 
         Boolean IsRoot(BodyPart bodyPart)
         {
             return bodyPart.parentCellId == Guid.Empty;
-        }
-
-        private void Place666(Cell childCell, Cell parentCell)
-        {
-            ConnectionPoint connectionPoint = parentCell.GetUnoccupiedConnectionPoint();
-
-            if (connectionPoint == null)
-            {
-                Debug.LogError("No available connection points on parent cell");
-                return;
-            }
-
-            // First, we want to get the direction to the connection point from the center of the parent cell.
-            Vector3 directionToConnectionPoint = connectionPoint.position.normalized;
-
-            // Then we calculate the distance we need to move the child cell away from the parent cell along that direction. 
-            // This is half the scale of the parent cell (i.e., radius), plus half the scale of the child cell.
-            float distanceToMove = parentCell.gameObject.transform.localScale.x / 2.0f + childCell.gameObject.transform.localScale.x / 2.0f;
-
-            // Finally, we calculate the new position for the child cell.
-            Vector3 childPosition = parentCell.gameObject.transform.position + directionToConnectionPoint * distanceToMove;
-
-            // Apply the new position and rotation to the child cell.
-            childCell.gameObject.transform.position = childPosition;
-            childCell.gameObject.transform.rotation = Quaternion.LookRotation(
-                parentCell.GetTransform().TransformDirection(connectionPoint.forward),
-                parentCell.GetTransform().up
-            );
-
-            connectionPoint.isOccupied = true;
-        }
-
-        private void Place665(Cell childCell, Cell parentCell)
-        {
-            ConnectionPoint connectionPoint = parentCell.GetUnoccupiedConnectionPoint();
-
-            if (connectionPoint == null)
-            {
-                Debug.LogError("No available connection points on parent cell");
-                return;
-            }
-
-            Vector3 directionToConnectionPoint = parentCell.GetTransform().TransformDirection(connectionPoint.position.normalized);
-            float distanceToMove = parentCell.gameObject.transform.localScale.x / 2.0f + childCell.gameObject.transform.localScale.x / 2.0f;
-
-            // Transform the local position of the connection point to world coordinates
-            Vector3 connectionPointWorldPosition = parentCell.GetTransform().TransformPoint(connectionPoint.position);
-
-            Vector3 childPosition = connectionPointWorldPosition + directionToConnectionPoint * distanceToMove;
-            childCell.gameObject.transform.position = childPosition;
-
-            childCell.gameObject.transform.rotation = Quaternion.LookRotation(
-                parentCell.GetTransform().TransformDirection(connectionPoint.forward),
-                parentCell.GetTransform().up
-            );
-
-            connectionPoint.isOccupied = true;
         }
 
         private void Place(Cell childCell, Cell parentCell)
@@ -137,22 +95,16 @@ namespace Domain {
                 return;
             }
 
-            Vector3 directionToConnectionPoint = parentCell.GetTransform().TransformDirection(connectionPoint.position.normalized);
-            float distanceToMove = parentCell.gameObject.transform.localScale.x / 2.0f + childCell.gameObject.transform.localScale.x / 2.0f;
+            Vector3 localChildCellPosition = connectionPoint.position + connectionPoint.forward * childCell.gameObject.transform.localScale.x / 2f;
+            Vector3 worldChildCellPosition = parentCell.gameObject.transform.TransformPoint(localChildCellPosition);
+            Quaternion worldChildCellOrientation = Quaternion.LookRotation(parentCell.gameObject.transform.TransformDirection(connectionPoint.forward));
 
-            // Transform the local position of the connection point to world coordinates
-            Vector3 connectionPointWorldPosition = parentCell.GetTransform().TransformPoint(Vector3.Scale(connectionPoint.position, parentCell.GetTransform().localScale));
+            childCell.gameObject.transform.position = worldChildCellPosition;
+            childCell.gameObject.transform.rotation = worldChildCellOrientation;
 
-            Vector3 childPosition = connectionPointWorldPosition + directionToConnectionPoint * distanceToMove;
-            childCell.gameObject.transform.position = childPosition;
-
-            childCell.gameObject.transform.rotation = Quaternion.LookRotation(
-                parentCell.GetTransform().TransformDirection(connectionPoint.forward),
-                parentCell.GetTransform().up
-            );
+            childCell.gameObject.transform.SetParent(parentCell.gameObject.transform);
 
             connectionPoint.isOccupied = true;
         }
-
     }
 }

@@ -30,23 +30,20 @@ namespace Domain
             this.connectionPoints = new List<ConnectionPoint>();
             this.initialSize = initialSize; // start at 10% of the final size
             this.finalSize = finalSize; // end at 100% of the final size
-
-            // Just for the test
-            InitializeCubeConnectionPoints();
         }
 
-        // TODO: pass position and orientation for the cell
-        public void InstantiatePrefab()
-        {
-            GameObject prefab = Resources.Load<GameObject>(prefabName);
-            gameObject = GameObject.Instantiate(prefab) as GameObject;
+        // // TODO: pass position and orientation for the cell
+        // public void InstantiatePrefab()
+        // {
+        //     GameObject prefab = Resources.Load<GameObject>(prefabName);
+        //     gameObject = GameObject.Instantiate(prefab) as GameObject;
 
-            // TODO: create a real name for the cell
-            gameObject.name = "Cell#" + id.ToString();
-            // TODO: do this later when it is added to organism
-            gameObject.transform.localScale = initialSize;
-            gameObject.transform.position = Vector3.zero;
-        }
+        //     // TODO: create a real name for the cell
+        //     gameObject.name = "Cell#" + id.ToString();
+        //     // TODO: do this later when it is added to organism
+        //     gameObject.transform.localScale = initialSize;
+        //     gameObject.transform.position = Vector3.zero;
+        // }
 
         public void UpdateSize()
         {
