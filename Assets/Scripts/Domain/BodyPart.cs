@@ -7,5 +7,10 @@ namespace Domain {
         public float relativeTimeToAppear; 
         public Guid parentCellId; 
         public Cell cell;
+
+        public Boolean IsRoot()
+        {
+            return parentCellId == Guid.Empty;
+        }
     }
 }

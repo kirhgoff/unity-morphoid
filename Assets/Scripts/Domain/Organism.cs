@@ -63,7 +63,7 @@ namespace Domain {
             cell.gameObject.name = bodyPart.name + "#" + cell.id.ToString();
             cell.gameObject.transform.localScale = cell.initialSize;
 
-            if (IsRoot(bodyPart))
+            if (bodyPart.IsRoot())
             {
                 // We assign global coordinates here
                 bodyPart.cell.gameObject.transform.position = new Vector3(0, 0, 0);
@@ -78,11 +78,6 @@ namespace Domain {
             cells.Add(bodyPart.cell.id, bodyPart.cell);
             // TODO: remove this
             if (bodyPart.name != "body") stopDoingThis = true;
-        }
-
-        Boolean IsRoot(BodyPart bodyPart)
-        {
-            return bodyPart.parentCellId == Guid.Empty;
         }
 
         private void Place(Cell childCell, Cell parentCell)
