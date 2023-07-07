@@ -56,7 +56,6 @@ namespace Domain {
             {
                 // TODO: it works only because the root is always at 0,0,0
                 bodyPart.cell.gameObject.transform.position = new Vector3(0, 0, 0);
-                bodyPart.cell.gameObject.transform.rotation = new Vector3(0, 0, 0);
             } 
             else 
             {
